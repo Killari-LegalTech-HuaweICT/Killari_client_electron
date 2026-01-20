@@ -2,7 +2,7 @@
   "name": "client-killari",
   "version": "1.0.0",
   "description": "An Electron application with React and TypeScript",
-  "main": "./out/main/index.js",
+  "main": "dist/main/index.js",
   "author": "example.com",
   "homepage": "https://electron-vite.org",
   "scripts": {
@@ -12,7 +12,12 @@
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "start": "electron-vite preview",
-    "dev": "electron-vite dev",
+    "client:dev": "electron-vite dev",
+    "backend:up": "docker-compose up -d || exit 0",
+    "backend:down": "docker-compose down",
+    "backend:logs": "docker-compose logs -f",
+    "dev": "npx concurrently --kill-others \"npm run backend:up\" \"npm run client:dev\"",
+    "dev:frontend": "npm run client:dev",
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
@@ -23,7 +28,14 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
-    "electron-updater": "^6.3.9"
+    "@mantine/core": "^8.3.12",
+    "@mantine/form": "^8.3.12",
+    "@mantine/hooks": "^8.3.12",
+    "@tabler/icons-react": "^3.36.1",
+    "electron-router-dom": "^2.1.0",
+    "electron-updater": "^6.3.9",
+    "jotai": "^2.16.2",
+    "reactflow": "^11.11.4"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",
@@ -44,6 +56,7 @@
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "typescript": "^5.9.3",
-    "vite": "^7.2.6"
+    "vite": "^7.2.6",
+    "concurrently": "^8.2.2"
   }
 }

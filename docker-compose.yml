@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # API de Killari (debes proporcionar un Dockerfile para el servicio)
+  killari-api:
+    build: ./server # Cambia el contexto si tu API está en otra carpeta
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://killari_user:killari_pass@postgres:5432/killari_db
+      - MONGO_URL=mongodb://mongo:27017/killari_docs
+      - NEO4J_URL=neo4j://neo4j:7687
+    depends_on:
+      - postgres
+      - mongo
+      - neo4j
+    networks:
+      - killari-net
+
+  # Base de datos relacional (PostgreSQL)
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=killari_db
+      - POSTGRES_USER=killari_user
+      - POSTGRES_PASSWORD=killari_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - killari-net
+
+  # Base de datos documental (MongoDB)
+  mongo:
+    image: mongo:6.0
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - killari-net
+
+  # Base de datos de grafos (Neo4j)
+  neo4j:
+    image: neo4j:5
+    ports:
+      - "7474:7474" # Interfaz web
+      - "7687:7687" # Bolt
+    environment:
+      - NEO4J_AUTH=neo4j/una_contraseña_muy_segura
+    volumes:
+      - neo4j_data:/data
+    networks:
+      - killari-net
+
+volumes:
+  postgres_data:
+  mongo_data:
+  neo4j_data:
+
+networks:
+  killari-net:

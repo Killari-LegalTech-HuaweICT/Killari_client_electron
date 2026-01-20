@@ -1,35 +1,21 @@
-import Versions from './components/Versions'
-import electronLogo from './assets/electron.svg'
+import type { ReactElement } from 'react'
 
-function App(): React.JSX.Element {
-  const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
+import { Router } from '../../lib/electron-router-dom'
 
-  return (
-    <>
-      <img alt="logo" className="logo" src={electronLogo} />
-      <div className="creator">Powered by electron-vite</div>
-      <div className="text">
-        Build an Electron app with <span className="react">React</span>
-        &nbsp;and <span className="ts">TypeScript</span>
-      </div>
-      <p className="tip">
-        Please try pressing <code>F12</code> to open the devTool
-      </p>
-      <div className="actions">
-        <div className="action">
-          <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">
-            Documentation
-          </a>
-        </div>
-        <div className="action">
-          <a target="_blank" rel="noreferrer" onClick={ipcHandle}>
-            Send IPC
-          </a>
-        </div>
-      </div>
-      <Versions></Versions>
-    </>
-  )
+import { withProviders } from './app/providers'
+import AppRouter from './app/routing'
+
+/**
+ * El componente raíz de la aplicación.
+ * 1. Establece el contexto del Router de 'electron-router-dom'.
+ * 2. Renderiza el AppRouter, que contiene todas las definiciones de <Routes>.
+ * 3. Es envuelto por el HOC 'withProviders' para obtener todos los demás contextos.
+ */
+export function App(): ReactElement {
+  return <Router main={AppRouter()} basename="/" />
 }
 
-export default App
+// Named wrapper so fast-refresh can identify the exported component
+export const AppWithProviders = withProviders(App)
+
+export default AppWithProviders

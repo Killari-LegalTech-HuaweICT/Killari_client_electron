@@ -11,15 +11,23 @@ _Proyecto participante en la **Huawei ICT Competition 2025—2026 Innovation Com
 
 ## 📜 Índice
 
-- [El Desafío](#el-desafío)
-- [Nuestra Solución: Killari](#nuestra-solución-killari)
-- [Acerca de este Repositorio](#-acerca-de-este-repositorio)
-- [✨ Características Principales](#-características-principales)
-- [🏗️ Arquitectura General](#️-arquitectura-general)
-- [🛠️ Tecnologías Utilizadas](#️-tecnologías-utilizadas)
-- [🚀 Cómo Empezar](#-cómo-empezar)
-- [👥 El Equipo](#-el-equipo)
-- [📄 Licencia](#-licencia)
+- [Killari: Cliente de Escritorio (Electron)](#killari-cliente-de-escritorio-electron)
+  - [📜 Índice](#-índice)
+  - [El Desafío](#el-desafío)
+  - [Nuestra Solución: Killari](#nuestra-solución-killari)
+  - [💻 Acerca de este Repositorio](#-acerca-de-este-repositorio)
+  - [✨ Características Principales](#-características-principales)
+  - [🏗️ Arquitectura General](#️-arquitectura-general)
+  - [🛠️ Tecnologías Utilizadas](#️-tecnologías-utilizadas)
+    - [Cliente (Este Repositorio)](#cliente-este-repositorio)
+    - [Plataforma Central (Backend \& IA)](#plataforma-central-backend--ia)
+  - [🚀 Cómo Empezar](#-cómo-empezar)
+    - [Prerrequisitos](#prerrequisitos)
+    - [Instalación](#instalación)
+    - [Persistencia local: `electron-store` vs SQLite](#persistencia-local-electron-store-vs-sqlite)
+    - [Docker Compose y scripts de desarrollo](#docker-compose-y-scripts-de-desarrollo)
+  - [👥 El Equipo](#-el-equipo)
+  - [📄 Licencia](#-licencia)
 
 ---
 
@@ -106,6 +114,51 @@ Sigue estos pasos para configurar el entorno de desarrollo local y ejecutar el c
     npm run build
     ```
     Esto generará los ejecutables para las diferentes plataformas (Windows, macOS, Linux) en la carpeta `dist`.
+
+### Persistencia local: `electron-store` vs SQLite
+
+Para datos de configuración local (preferencias, token de sesión, flags simples) recomendamos usar `electron-store` (almacenamiento clave-valor en JSON). Es sencillo, seguro y no requiere esquema.
+
+Usa SQLite solo si necesitas capacidades avanzadas de manejo de datos offline (consultas SQL complejas, transacciones, grandes volúmenes). En la mayoría de los casos, y especialmente si tu backend centralizado es la fuente de la verdad, `electron-store` es suficiente.
+
+### Docker Compose y scripts de desarrollo
+
+Se incluye un `docker-compose.yml` para ejecutar el backend (API) y las bases de datos recomendadas (Postgres, MongoDB, Neo4j). También se añadieron scripts útiles en `package.json` para facilitar el flujo de desarrollo:
+
+- `npm run backend:up` — Levanta los servicios del backend en segundo plano (docker-compose up -d).
+- `npm run backend:down` — Detiene y elimina los contenedores (docker-compose down).
+- `npm run backend:logs` — Muestra logs en vivo de los servicios del backend.
+- `npm run client:dev` — Inicia sólo el cliente de Electron en modo desarrollo.
+- `npm run dev` — Inicia simultáneamente el backend y el cliente (usa `concurrently`).
+
+Antes de usar `npm run dev` instala las dependencias y `concurrently`:
+
+```bash
+npm install
+npm install --save-dev concurrently
+```
+
+Si al ejecutar `npm run dev` ves el error:
+
+```
+"concurrently" no se reconoce como un comando interno o externo
+```
+
+Prueba lo siguiente:
+
+- Asegúrate de haber ejecutado `npm install` en la raíz del proyecto.
+- Instala `concurrently` localmente si no lo has hecho: `npm install --save-dev concurrently`.
+- Cierra y vuelve a abrir la terminal en Windows para que se refresque el PATH de npm.
+- Alternativamente, puedes ejecutar el comando usando `npx` sin instalar la dependencia globalmente:
+
+```bash
+npx concurrently --kill-others "npm run backend:up" "npm run client:dev"
+```
+
+El script `dev` del proyecto ya usa `npx` para evitar este problema en la mayoría de entornos.
+
+Si vas a usar Docker por primera vez, asegúrate de tener `docker` y `docker-compose` instalados. Copia `.env.example` a `.env` y ajusta las contraseñas antes de levantar los servicios.
+
 
 ## 👥 El Equipo
 

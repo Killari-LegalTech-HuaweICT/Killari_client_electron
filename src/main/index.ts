@@ -1,4 +1,5 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { Router } from '../lib/electron-router-dom'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -12,7 +13,9 @@ function createWindow(): void {
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      preload: app.isPackaged
+        ? join(process.resourcesPath, 'preload', 'index.js')
+        : join(__dirname, '../preload/index.js'),
       sandbox: false
     }
   })
@@ -29,10 +32,17 @@ function createWindow(): void {
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    // En desarrollo, añadir el segmento `/main` a la URL que abre el renderer.
+    // El router de `electron-router-dom` puede usar ese basename para scoping
+    // por ventana (p. ej. `/main`). Si no añadimos este sufijo, el Router
+    // podría no coincidir con `/` y no renderizar nada.
+    const base = process.env['ELECTRON_RENDERER_URL']!.replace(/\/$/, '')
+    mainWindow.loadURL(`${base}/main`)
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+
 }
 
 // This method will be called when Electron has finished
@@ -53,6 +63,22 @@ app.whenReady().then(() => {
   ipcMain.on('ping', () => console.log('pong'))
 
   createWindow()
+
+  // Intentamos adjuntar la ventana principal al router si está disponible.
+  try {
+    const r: any = Router as any
+  const mw: any = BrowserWindow.getAllWindows()[0] ?? null
+    // Algunos nombres de API posibles según la versión. Probamos varios y no fallamos si no existen.
+    if (typeof r.setMainWindow === 'function') r.setMainWindow(mw)
+    if (typeof r.registerMainWindow === 'function') r.registerMainWindow(mw)
+    if (typeof r.attachMainWindow === 'function') r.attachMainWindow(mw)
+    if (typeof r.listen === 'function') r.listen()
+  } catch (err) {
+    // No queremos que el router impida el arranque de la app si falla.
+    // Loguearlo en consola para ayudar en debugging.
+    // eslint-disable-next-line no-console
+    console.warn('electron-router-dom: no fue posible inicializar el router en el main process', err)
+  }
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
