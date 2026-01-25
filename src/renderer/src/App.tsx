@@ -1,7 +1,5 @@
 import type { ReactElement } from 'react'
-
 import { Router } from '../../lib/electron-router-dom'
-
 import { withProviders } from './app/providers'
 import AppRouter from './app/routing'
 

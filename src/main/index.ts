@@ -1,11 +1,11 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
-import { Router } from '../lib/electron-router-dom'
+import { registerRoute } from '../lib/electron-router-dom'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
 function createWindow(): void {
-  // Create the browser window.
+  // 1. Crear la instancia de la ventana
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
@@ -20,6 +20,14 @@ function createWindow(): void {
     }
   })
 
+  // 2. REGISTRAR LA RUTA
+  // Esto vincula la ventana con un "id" que luego usarás en tu Router de React/Vue
+  registerRoute({
+    id: 'main',
+    browserWindow: mainWindow,
+    htmlFile: join(__dirname, '../renderer/index.html')
+  })
+
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })
@@ -29,32 +37,21 @@ function createWindow(): void {
     return { action: 'deny' }
   })
 
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
+  // 3. CARGAR LA URL O ARCHIVO
+  // electron-router-dom maneja internamente la carga si usas registerRoute correctamente,
+  // pero para electron-vite es mejor ser explícito:
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    // En desarrollo, añadir el segmento `/main` a la URL que abre el renderer.
-    // El router de `electron-router-dom` puede usar ese basename para scoping
-    // por ventana (p. ej. `/main`). Si no añadimos este sufijo, el Router
-    // podría no coincidir con `/` y no renderizar nada.
-    const base = process.env['ELECTRON_RENDERER_URL']!.replace(/\/$/, '')
-    mainWindow.loadURL(`${base}/main`)
+    // En desarrollo, apuntamos a la URL del servidor de vite + el id de la ruta
+    mainWindow.loadURL(`${process.env['ELECTRON_RENDERER_URL']}/index.html#main`)
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    // En producción, cargamos el archivo local
+    mainWindow.loadFile(join(__dirname, '../renderer/index.html'), { hash: 'main' })
   }
-
-
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
@@ -64,37 +61,13 @@ app.whenReady().then(() => {
 
   createWindow()
 
-  // Intentamos adjuntar la ventana principal al router si está disponible.
-  try {
-    const r: any = Router as any
-  const mw: any = BrowserWindow.getAllWindows()[0] ?? null
-    // Algunos nombres de API posibles según la versión. Probamos varios y no fallamos si no existen.
-    if (typeof r.setMainWindow === 'function') r.setMainWindow(mw)
-    if (typeof r.registerMainWindow === 'function') r.registerMainWindow(mw)
-    if (typeof r.attachMainWindow === 'function') r.attachMainWindow(mw)
-    if (typeof r.listen === 'function') r.listen()
-  } catch (err) {
-    // No queremos que el router impida el arranque de la app si falla.
-    // Loguearlo en consola para ayudar en debugging.
-    // eslint-disable-next-line no-console
-    console.warn('electron-router-dom: no fue posible inicializar el router en el main process', err)
-  }
-
   app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.

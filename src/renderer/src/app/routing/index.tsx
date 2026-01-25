@@ -6,7 +6,6 @@ import { DashboardRouter } from '../../pages/dashboard/_router'
 import { OnboardingPage } from '../../pages/onboarding'
 import { AppRoutes } from '../../shared/config/routes'
 import { Navigate, Route } from 'react-router-dom'
-
 import { PrivateGuard } from './guards/PrivateGuard'
 import { PublicGuard } from './guards/PublicGuard'
 

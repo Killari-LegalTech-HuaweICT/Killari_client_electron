@@ -1,9 +1,14 @@
 import { createElectronRouter } from 'electron-router-dom'
 
-// Nota: no definimos `types.ids` para evitar que el Router añada un
-// `basename` basado en el id de la ventana (por ejemplo `/main`), lo cual
-// provoca que la ruta raíz `/` no coincida en dev. Si necesitas scoping por
-// ventana en el futuro, añade `types.ids` con cuidado y adapta las rutas.
-export const { Router, registerRoute, settings } = createElectronRouter({
-  port: 5173
+export const { Router, registerRoute } = createElectronRouter({
+  port: 5173, // the port of your React server is running on (optional, default port is 3000)
+
+  types: {
+    /**
+     * The ids of the windows of your application, think of these ids as the basenames of the routes
+     * this new way will allow your editor's intelisense to help you know which ids are available to use
+     * both in the main and renderer process
+     */
+    ids: ['main']
+  }
 })

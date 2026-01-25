@@ -16,7 +16,7 @@
     "backend:up": "docker-compose up -d || exit 0",
     "backend:down": "docker-compose down",
     "backend:logs": "docker-compose logs -f",
-    "dev": "npx concurrently --kill-others \"npm run backend:up\" \"npm run client:dev\"",
+    "dev": "npx concurrently --kill-others-on-fail \"npm run backend:up\" \"npm run client:dev\"",
     "dev:frontend": "npm run client:dev",
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
