@@ -9,6 +9,10 @@ function createWindow(): void {
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
+    // --- CAMBIOS AQUÍ ---
+    minWidth: 800,
+    minHeight: 600,
+    // --------------------
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
@@ -21,7 +25,6 @@ function createWindow(): void {
   })
 
   // 2. REGISTRAR LA RUTA
-  // Esto vincula la ventana con un "id" que luego usarás en tu Router de React/Vue
   registerRoute({
     id: 'main',
     browserWindow: mainWindow,
@@ -38,13 +41,9 @@ function createWindow(): void {
   })
 
   // 3. CARGAR LA URL O ARCHIVO
-  // electron-router-dom maneja internamente la carga si usas registerRoute correctamente,
-  // pero para electron-vite es mejor ser explícito:
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    // En desarrollo, apuntamos a la URL del servidor de vite + el id de la ruta
     mainWindow.loadURL(`${process.env['ELECTRON_RENDERER_URL']}/index.html#main`)
   } else {
-    // En producción, cargamos el archivo local
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'), { hash: 'main' })
   }
 }
@@ -56,7 +55,6 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
   ipcMain.on('ping', () => console.log('pong'))
 
   createWindow()

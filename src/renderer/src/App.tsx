@@ -3,14 +3,26 @@ import { Router } from '../../lib/electron-router-dom'
 import { withProviders } from './app/providers'
 import AppRouter from './app/routing'
 
+// 1. IMPORTA LOS ESTILOS DE MANTINE (OBLIGATORIO)
+import '@mantine/core/styles.css'
+import { MantineProvider, createTheme } from '@mantine/core'
+
+// 2. DEFINE EL TEMA DE KILLARI (OPCIONAL PERO RECOMENDADO)
+const killariTheme = createTheme({
+  primaryColor: 'indigo',
+  fontFamily: 'Inter, sans-serif'
+})
+
 /**
  * El componente raíz de la aplicación.
- * 1. Establece el contexto del Router de 'electron-router-dom'.
- * 2. Renderiza el AppRouter, que contiene todas las definiciones de <Routes>.
- * 3. Es envuelto por el HOC 'withProviders' para obtener todos los demás contextos.
  */
 export function App(): ReactElement {
-  return <Router main={AppRouter()} basename="/" />
+  return (
+    // 3. ENVUELVE CON EL PROVIDER
+    <MantineProvider theme={killariTheme} defaultColorScheme="dark">
+      <Router main={AppRouter()} />
+    </MantineProvider>
+  )
 }
 
 // Named wrapper so fast-refresh can identify the exported component
