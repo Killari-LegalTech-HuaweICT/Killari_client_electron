@@ -7,9 +7,6 @@ import icon from '../../resources/icon.png?asset'
 function createWindow(): void {
   // 1. Crear la instancia de la ventana
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
-    // --- CAMBIOS AQUÍ ---
     minWidth: 800,
     minHeight: 600,
     // --------------------

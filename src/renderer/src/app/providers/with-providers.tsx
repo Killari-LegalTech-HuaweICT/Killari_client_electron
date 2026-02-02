@@ -11,6 +11,6 @@ export function withProviders<P = Record<string, unknown>>(Component: ComponentT
     //     <StoreProvider>{<Component {...props} />}</StoreProvider>
     //   </ThemeProvider>
     // )
-    return <Component {...(props as any)} />
+    return <Component {...props} />
   }
 }

@@ -165,7 +165,6 @@ Si vas a usar Docker por primera vez, asegúrate de tener `docker` y `docker-com
 - **Cristofer Ezequiel Anglas Torpoco:** Capitán del Equipo (Ing. Eléctrica y Electrónica)
 - **Katherine Nikole Callo Quispe:** Miembro del Equipo (Derecho)
 - **Nick Vilcapoma Chamorro:** Miembro del Equipo (Ing. Sistemas)
-- **Conozco Poma Flavio Italo:** Instructor
 
 ## 📄 Licencia
 

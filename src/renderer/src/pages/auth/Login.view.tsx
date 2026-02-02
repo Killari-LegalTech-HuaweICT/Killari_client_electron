@@ -1,4 +1,9 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useSetAtom } from 'jotai'
+import { isAuthenticatedAtom } from '../../entities/session/model/auth.store'
+import { setSession } from '../../entities/session/session.store'
+import { AppRoutes } from '../../shared/config/routes'
 import {
   TextInput,
   PasswordInput,
@@ -23,18 +28,30 @@ import {
 } from '@tabler/icons-react'
 
 export const LoginView: React.FC = () => {
+  const navigate = useNavigate()
+  const setAuth = useSetAtom(isAuthenticatedAtom)
+
+  function handleSubmit(e: React.FormEvent): void {
+    e.preventDefault()
+    // Simulación de login básico
+    setSession({ token: 'demo-token', userId: 'demo' })
+    setAuth(true)
+    navigate(AppRoutes.private.root)
+  }
   return (
     // Contenedor principal con un fondo sutil inspirado en la luna
     <div
       style={{
         backgroundColor: '#0a0f1e',
-        minHeight: '100vh',
+        width: '100vw',
+        height: '100vh',
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'center',
         backgroundImage: 'radial-gradient(circle at 50% -20%, #1e293b 0%, #0a0f1e 80%)'
       }}
     >
-      <Container size={420} my={40}>
+      <Container size={520} my={40}>
         {/* Logo / Marca Killari */}
         <Center mb="xl">
           <Stack gap={0} align="center">
@@ -46,9 +63,6 @@ export const LoginView: React.FC = () => {
             >
               KILLARI
             </Title>
-            <Text c="dimmed" size="xs" tt="uppercase" fw={700}>
-              Luz de Luna
-            </Text>
           </Stack>
         </Center>
 
@@ -56,21 +70,50 @@ export const LoginView: React.FC = () => {
           radius="md"
           p="xl"
           withBorder
-          style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)', borderColor: '#1e293b' }}
+          style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            backgroundColor: 'rgba(255, 255, 255, 0.03)',
+            borderColor: '#1e293b'
+          }}
         >
           <Text size="lg" fw={500} c="white" mb="md" ta="center">
             Bienvenido de nuevo
           </Text>
 
-          <Tabs color="blue" variant="pills" defaultValue="biometric">
-            <Tabs.List grow mb="xl">
-              <Tabs.Tab value="biometric" leftSection={<IconFingerprint size={16} />}>
+          <Tabs color="cyan" variant="pills" defaultValue="biometric">
+            <Tabs.List
+              mb="xl"
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: 0,
+                alignItems: 'center',
+                whiteSpace: 'nowrap',
+                overflowX: 'auto'
+              }}
+            >
+              <Tabs.Tab
+                value="biometric"
+                leftSection={<IconFingerprint size={16} />}
+                style={{ whiteSpace: 'nowrap' }}
+              >
                 Huella
               </Tabs.Tab>
-              <Tabs.Tab value="email" leftSection={<IconMail size={16} />}>
-                Correo
+              <Tabs.Tab
+                value="email"
+                leftSection={<IconMail size={16} />}
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                Correo / DNI
               </Tabs.Tab>
-              <Tabs.Tab value="phone" leftSection={<IconPhone size={16} />}>
+              <Tabs.Tab
+                value="phone"
+                leftSection={<IconPhone size={16} />}
+                style={{ whiteSpace: 'nowrap' }}
+              >
                 Celular
               </Tabs.Tab>
             </Tabs.List>
@@ -84,11 +127,17 @@ export const LoginView: React.FC = () => {
                 <ActionIcon
                   variant="gradient"
                   gradient={{ from: 'blue', to: 'cyan' }}
-                  size={80}
-                  radius={100}
-                  onClick={() => console.log('Iniciando biometría...')}
+                  size={96}
+                  radius={120}
+                  style={{ boxShadow: '0 6px 18px rgba(34,211,238,0.12)' }}
+                  onClick={() => {
+                    // Simular inicio de sesión biométrico
+                    setSession({ token: 'demo-token', userId: 'demo' })
+                    setAuth(true)
+                    navigate(AppRoutes.private.root)
+                  }}
                 >
-                  <IconFingerprint size={45} />
+                  <IconFingerprint size={48} />
                 </ActionIcon>
                 <Text size="xs" c="blue" style={{ cursor: 'pointer' }}>
                   ¿Problemas con el sensor?
@@ -98,8 +147,8 @@ export const LoginView: React.FC = () => {
 
             {/* OPCIÓN 2: CORREO Y CONTRASEÑA */}
             <Tabs.Panel value="email">
-              <form>
-                <Stack>
+              <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+                <Stack style={{ width: '100%' }}>
                   <TextInput
                     required
                     label="Correo electrónico"
@@ -118,11 +167,18 @@ export const LoginView: React.FC = () => {
                   />
                 </Stack>
 
-                <Group justify="space-between" mt="xl">
+                <Group justify="space-between" mt="xl" style={{ width: '100%' }}>
                   <Text c="dimmed" size="xs" style={{ cursor: 'pointer' }}>
                     ¿Olvidaste tu contraseña?
                   </Text>
-                  <Button type="submit" radius="xl" color="blue">
+                  <Button
+                    type="submit"
+                    radius="xl"
+                    size="md"
+                    variant="gradient"
+                    gradient={{ from: 'blue', to: 'cyan' }}
+                    rightSection={<IconArrowRight size={16} />}
+                  >
                     Entrar
                   </Button>
                 </Group>
@@ -143,7 +199,9 @@ export const LoginView: React.FC = () => {
                 <Button
                   fullWidth
                   radius="xl"
-                  color="blue"
+                  size="md"
+                  variant="gradient"
+                  gradient={{ from: 'blue', to: 'cyan' }}
                   rightSection={<IconArrowRight size={16} />}
                 >
                   Enviar código de acceso

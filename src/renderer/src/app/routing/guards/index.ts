@@ -1,2 +1,2 @@
-// Barrel file is not used; import guards directly from their files.
-export {}
+export { PrivateGuard } from './PrivateGuard'
+export { PublicGuard } from './PublicGuard'

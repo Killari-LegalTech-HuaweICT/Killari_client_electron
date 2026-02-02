@@ -7,6 +7,8 @@ export const AppRoutes = {
   },
   private: {
     root: '/dashboard',
+    // Lista de casos
+    cases: '/dashboard/cases',
     onboarding: {
       root: '/dashboard/onboarding'
     }

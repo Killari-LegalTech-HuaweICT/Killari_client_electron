@@ -1,6 +1,8 @@
 // src/renderer/src/app/routing/index.tsx
 
-import { OnboardingGuard } from '../../features/onboarding-guard'
+import { OnboardingGuard } from './guards/OnboardingGuard'
+import type { ReactElement } from 'react'
+import { DashboardLayout } from '../../pages/dashboard/_layout/Layout'
 import { AuthPage } from '../../pages/auth/AuthPage'
 import { DashboardRouter } from '../../pages/dashboard/_router'
 import { OnboardingPage } from '../../pages/onboarding'
@@ -14,7 +16,7 @@ import { PublicGuard } from './guards/PublicGuard'
  * En su lugar, simplemente DEFINE y EXPORTA la lista de componentes <Route>
  * que serán gestionados por el <Router> de electron-router-dom en App.tsx.
  */
-const AppRouter = () => {
+const AppRouter = (): ReactElement => {
   return (
     <>
       {/* 1. Rutas Públicas */}
@@ -25,7 +27,9 @@ const AppRouter = () => {
       {/* 2. Rutas Privadas */}
       <Route element={<PrivateGuard />}>
         <Route element={<OnboardingGuard />}>
-          <Route path={`${AppRoutes.private.root}/*`}>{DashboardRouter()}</Route>
+          <Route path={`${AppRoutes.private.root}/*`} element={<DashboardLayout />}>
+            {DashboardRouter()}
+          </Route>
         </Route>
         <Route path={`${AppRoutes.private.onboarding.root}/*`} element={<OnboardingPage />} />
       </Route>
