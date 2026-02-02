@@ -7,7 +7,12 @@ export const GraphCanvas: React.FC = () => {
     <Paper
       h="100%"
       p="md"
-      style={{ backgroundColor: '#020617', borderColor: '#334155', position: 'relative', overflow: 'hidden' }}
+      style={{
+        backgroundColor: '#020617',
+        borderColor: '#334155',
+        position: 'relative',
+        overflow: 'hidden'
+      }}
       withBorder
       radius="md"
     >
@@ -23,9 +28,28 @@ export const GraphCanvas: React.FC = () => {
         </ActionIcon>
       </Group>
 
-      <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.3 }}>
+      <div
+        style={{
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          opacity: 0.3
+        }}
+      >
         <div style={{ textAlign: 'center' }}>
-          <div style={{ width: 200, height: 200, borderRadius: '50%', border: '2px dashed #3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
+          <div
+            style={{
+              width: 200,
+              height: 200,
+              borderRadius: '50%',
+              border: '2px dashed #3b82f6',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto'
+            }}
+          >
             <Text c="blue" fw={700}>
               GRAPH ENGINE
             </Text>

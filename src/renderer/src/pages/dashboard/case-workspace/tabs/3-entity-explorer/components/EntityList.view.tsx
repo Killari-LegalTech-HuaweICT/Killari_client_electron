@@ -1,10 +1,10 @@
 import React from 'react'
 import { Paper, Text, Group, Avatar, Badge, ScrollArea, TextInput } from '@mantine/core'
-import { IconSearch, IconUser, IconBuilding, IconMapPin } from '@tabler/icons-react'
+import { IconSearch, IconUser, IconBuilding, IconMapPin, IconActivity } from '@tabler/icons-react'
+import { CaseEntity } from '../entity-explorer.domain'
+import { entityActions } from '../entity-explorer.store'
 
-export type Entity = { name: string; type: string; role: string; avatar?: string | null }
-
-export const EntityList: React.FC<{ items: Entity[] }> = ({ items }) => {
+export const EntityList: React.FC<{ items: CaseEntity[] }> = ({ items }) => {
   return (
     <Paper
       h="100%"
@@ -13,16 +13,35 @@ export const EntityList: React.FC<{ items: Entity[] }> = ({ items }) => {
       withBorder
       radius="md"
     >
-      <TextInput placeholder="Filtrar entidades..." leftSection={<IconSearch size={16} />} mb="md" />
+      <TextInput
+        placeholder="Filtrar entidades..."
+        leftSection={<IconSearch size={16} />}
+        mb="md"
+      />
       <ScrollArea h="calc(100% - 60px)">
         <Text size="xs" c="dimmed" mb="xs">
           {items.length} entidades
         </Text>
-        {items.map((e, i) => (
-          <Paper key={i} p="sm" mb="sm" style={{ backgroundColor: '#0f172a', cursor: 'pointer' }} radius="md">
+        {items.map((e) => (
+          <Paper
+            key={e.id}
+            p="sm"
+            mb="sm"
+            style={{ backgroundColor: '#0f172a', cursor: 'pointer' }}
+            radius="md"
+            onClick={() => entityActions.selectEntity(e.id)}
+          >
             <Group>
               <Avatar color="blue" radius="xl">
-                {e.type === 'Person' ? <IconUser size={16} /> : e.type === 'Location' ? <IconMapPin size={16} /> : <IconBuilding size={16} />}
+                {e.type === 'Person' ? (
+                  <IconUser size={16} />
+                ) : e.type === 'Location' ? (
+                  <IconMapPin size={16} />
+                ) : e.type === 'Org' ? (
+                  <IconBuilding size={16} />
+                ) : (
+                  <IconActivity size={16} />
+                )}
               </Avatar>
               <div style={{ flex: 1 }}>
                 <Text size="sm" fw={500} c="white">

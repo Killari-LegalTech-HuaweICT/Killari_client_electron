@@ -1,31 +1,40 @@
 import React from 'react'
 import { Card, Text, Timeline } from '@mantine/core'
-import { IconAlertTriangle, IconCheck } from '@tabler/icons-react'
+import { IconAlertTriangle, IconCheck, IconInfoCircle } from '@tabler/icons-react'
+import { evidenceAnalyzerStore } from '../evidence-analyzer.store'
 
 export const TimelineCard: React.FC = () => {
+  const events = evidenceAnalyzerStore.currentAnalysis.timeline
+
   return (
-    <Card radius="md" p="xl" style={{ backgroundColor: '#1e293b', borderColor: '#334155' }} withBorder>
-      <Timeline active={1} bulletSize={24} lineWidth={2}>
-        <Timeline.Item bullet={<IconAlertTriangle size={12} />} title="Inicio del Incidente">
-          <Text c="dimmed" size="sm">
-            21:15 - Cámara de seguridad capta vehículo.
-          </Text>
-        </Timeline.Item>
-        <Timeline.Item bullet={<IconCheck size={12} />} title="Ingreso de Sospechoso">
-          <Text c="dimmed" size="sm">
-            21:20 - Registro de ingreso en portería.
-          </Text>
-        </Timeline.Item>
-        <Timeline.Item title="Evento Crítico" lineVariant="dashed">
-          <Text c="dimmed" size="sm">
-            21:45 - Ventana de tiempo no corroborada.
-          </Text>
-        </Timeline.Item>
-        <Timeline.Item title="Salida">
-          <Text c="dimmed" size="sm">
-            22:10 - Vehículo abandona la zona.
-          </Text>
-        </Timeline.Item>
+    <Card
+      radius="md"
+      p="xl"
+      style={{ backgroundColor: '#1e293b', borderColor: '#334155' }}
+      withBorder
+    >
+      <Timeline active={events.length - 1} bulletSize={24} lineWidth={2}>
+        {events.map((evt) => (
+          <Timeline.Item
+            key={evt.id}
+            bullet={
+              evt.type === 'critical' ? (
+                <IconAlertTriangle size={12} />
+              ) : evt.type === 'verified' ? (
+                <IconCheck size={12} />
+              ) : (
+                <IconInfoCircle size={12} />
+              )
+            }
+            title={evt.title}
+            color={evt.type === 'critical' ? 'red' : evt.type === 'verified' ? 'teal' : 'blue'}
+            lineVariant={evt.status === 'unconfirmed' ? 'dashed' : 'solid'}
+          >
+            <Text c="dimmed" size="sm">
+              {evt.time} - {evt.description}
+            </Text>
+          </Timeline.Item>
+        ))}
       </Timeline>
     </Card>
   )

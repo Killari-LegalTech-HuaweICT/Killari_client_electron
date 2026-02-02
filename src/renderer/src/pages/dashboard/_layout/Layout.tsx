@@ -1,20 +1,38 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 import { AppShell, Group, ActionIcon, Tooltip, Text, Badge, Paper } from '@mantine/core'
 import { IconArrowLeft } from '@tabler/icons-react'
 import UserMenu from './components/UserMenu'
 import { AppRoutes } from '../../../shared/config/routes'
+import { caseListStore } from '../case-list/case-list.store'
 
-// --- La Cabecera Unificada ---
 const UnifiedHeader: React.FC = () => {
   const navigate = useNavigate()
-  const { caseId } = useParams<{ caseId: string }>()
+  // Leemos los params tal y como vienen del Router para poder debuggear
+  const params = useParams()
+  console.log('Params detectados (UnifiedHeader):', params)
+  // Aceptamos ambos nombres por compatibilidad ('caseId' o 'id')
+  const { caseId: _caseId, id } = params as { caseId?: string; id?: string }
+  const caseId = _caseId ?? id
   const isCaseWorkspace = !!caseId
 
-  const caseDetails = {
-    name: 'Caso: La Rinconada',
-    type: 'Homicidio'
-  }
+  // Lógica para obtener los datos del caso dinámicamente
+  const activeCase = useMemo(() => {
+    if (!caseId) return null
+    // Buscamos en la lista rawList que definimos en el store (o en list haciendo cast)
+    return caseListStore.rawList.find((c) => c.id === caseId)
+  }, [caseId])
+
+  // Datos a mostrar (Usamos los del caso encontrado o unos por defecto si el ID no existe)
+  const caseDetails = activeCase
+    ? {
+        name: activeCase.title,
+        type: activeCase.type
+      }
+    : {
+        name: 'Caso no encontrado',
+        type: 'Desconocido'
+      }
 
   return (
     <Paper

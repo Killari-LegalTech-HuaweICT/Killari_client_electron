@@ -1,9 +1,7 @@
 import React from 'react'
 import { Grid } from '@mantine/core'
-import DocumentList from './components/DocumentList.view'
-import DocumentMain from './components/DocumentMain.view'
-
-// Document list and transcription logic moved to components/
+import { DocumentList } from './components/document-list/DocumentList.view'
+import { DocumentMain } from './components/document-main/DocumentMain.view'
 
 export const DocumentViewerView: React.FC = () => {
   return (

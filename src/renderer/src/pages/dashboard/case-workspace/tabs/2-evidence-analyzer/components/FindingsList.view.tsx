@@ -51,7 +51,13 @@ export const FindingsList: React.FC<{ items: Finding[] }> = ({ items }) => {
             </div>
           </Group>
 
-          <Button fullWidth variant="subtle" size="xs" mt="md" rightSection={<IconSearch size={14} />}>
+          <Button
+            fullWidth
+            variant="subtle"
+            size="xs"
+            mt="md"
+            rightSection={<IconSearch size={14} />}
+          >
             Ver evidencia fuente
           </Button>
         </Card>
