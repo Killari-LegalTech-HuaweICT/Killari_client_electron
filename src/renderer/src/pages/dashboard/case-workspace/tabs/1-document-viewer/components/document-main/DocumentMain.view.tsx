@@ -31,7 +31,7 @@ export const DocumentMain: React.FC<DocumentMainProps> = ({ document, onOpenExte
     setCurrentDocument,
     loadAnnotations,
     downloadDocument,
-    setPage,
+    // setPage,
     nextPage,
     prevPage
   } = useDocumentMain()
